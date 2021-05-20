@@ -18,7 +18,7 @@ int main(int argc, char** argv){
 		printf("File should be .c or .cc .cpp \n");
 		return 0;
 	}
-	printf("\n%s",argv[1]);
+	// printf("\n%s",argv[1]);
 	FILE *fp1=fopen(argv[1],"r");
 	if(fp1==NULL){
 		printf("File does not exist\n");
@@ -35,9 +35,15 @@ int main(int argc, char** argv){
 		if(c=='/'){
 			c=fgetc(fp1);
 			if(c=='/'){
-				while((c=fgetc(fp1))!='\n');
+				printf("%c",c);
+				while((c=fgetc(fp1))!='\n'){
+					printf("%c",c);
+				}
 			}else if(c=='*'){
-				while((c=fgetc(fp1))!='*' && (c=fgetc(fp1))!='/');
+				printf("%c",c);
+				while((c=fgetc(fp1))!='*' && (c=fgetc(fp1))!='/'){
+					printf("%c",c);
+				}
 			}else{
 				fputc('/',fp2);
 				fputc(c,fp2);
@@ -45,6 +51,7 @@ int main(int argc, char** argv){
 		}else
 			fputc(c,fp2);
 	}
+	
 	fclose(fp1);
 	fclose(fp2);
 	return 0;
