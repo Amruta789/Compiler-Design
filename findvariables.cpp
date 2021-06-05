@@ -9,6 +9,7 @@ bool checkIfVariableDeclared(vector<string> variables, string line, int linenumb
 
 
 /* DAsh bufallo
+ AShskdhkc
  Nonsense */
 int main(int argc, char* argv[]){
     if(argc!=2){
