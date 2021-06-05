@@ -41,7 +41,12 @@ int main(int argc, char** argv){
 				}
 			}else if(c=='*'){
 				printf("%c",c);
-				while((c=fgetc(fp1))!='*' && (c=fgetc(fp1))!='/'){
+				while(1){
+					if((c=fgetc(fp1))=='*'){
+						if((c=fgetc(fp1))=='/'){
+							break;
+						}
+					}
 					printf("%c",c);
 				}
 			}else{
