@@ -1,1 +1,4 @@
-// Production input is of the form S -> Aa | Bb | #  where # denotes null
+# Production input is of the form S -> Aa | Bb and there are no epsilon-productions
+S -> A
+A -> A d | Ae | aB | ac
+B -> bBc | f
