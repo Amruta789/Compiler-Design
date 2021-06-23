@@ -1,0 +1,1 @@
+// Production input is of the form S -> Aa | Bb | #  where # denotes null

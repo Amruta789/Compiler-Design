@@ -20,13 +20,15 @@ int main(int argc, char* argv[]){
         cout << "File should have .c extension" << endl;
         return 0;
     }
-        ifstream filebuf;
+    
+    ifstream filebuf;
     filebuf.open(filename);
     if(!filebuf.is_open()){
         cout << "File does not exist" << endl;
         return 0;
     }
-    int linecount=0;     string line;
+    int linecount=0; 
+    string line;
     while(getline(filebuf,line)){
         linecount++;
         cout << linecount << " " << line << endl;

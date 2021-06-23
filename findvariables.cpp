@@ -5,7 +5,24 @@
 #include<vector>
 using namespace std;
 
-bool checkIfVariableDeclared(vector<string> variables, string line, int linenumber);
+string declarationslist[19] = {"auto", "bool", "char", "define", "double", "enum",
+                    "extern", "float", "int", "FILE",
+                    "long", "register", "short", "static", "struct",
+                    "typedef","union", "unsigned","void"};
+
+string delimiters[] = { " ", "+", "-", "*", "/", ",", ";", ">", "<", "=", "(", ")",
+                    "[", "]", "{", "}", "." };
+
+
+
+bool checkIfVariableDeclared(string line, int linenumber){    
+    for (size_t i = 0; i < 19; i++){
+        if(line.find(declarationslist[i])!=-1)
+            return 1;
+    }
+    return 0;
+}
+
 
 
 /* DAsh bufallo
@@ -32,9 +49,12 @@ int main(int argc, char* argv[]){
     }
     int linecount=0; // hfkdyifyeo idhc
     string line;
+    cout << "Lines which contain declarations: " << endl;
     while(getline(filebuf,line)){
-        linecount++;
-        cout << linecount << " " << line << endl;
+        linecount++;      
+        if(checkIfVariableDeclared(line,linecount)){
+            cout << linecount << " " << line << endl;
+        }
     } /* HA */
      
     filebuf.close();
