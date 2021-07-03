@@ -1,27 +1,51 @@
 #include <iostream>
 #include<vector>
 #include<string>
-#include<cctype.h>
+#include<cctype>
 #include<fstream>
 #include<sstream>
+#include<stdbool.h>
 using namespace std;
 
 struct NonTerminalDetails {
     char lhs;
-    string rhs;
+    vector<string> rhs;
     vector<char> first;
     vector<char> follow;
 }nt[30];
 
-void printProductions(int productioncount) {
+int productioncount = 0;
+
+void printProductions() {
     for (size_t i = 0; i < productioncount; i++)
     {
-        cout << nt[i].lhs << " -> " << nt[i].rhs << endl;
+        for (size_t j = 0; j < nt[i].rhs.size(); j++)
+        {
+            cout << nt[i].lhs << " -> " << nt[i].rhs[j] << endl;
+        } 
     }
 
 }
 
+int getIndexForLHS(char lhs) {
+    for (size_t i = 0; i < productioncount; i++)
+    {
+        if (nt[i].lhs == lhs) {
+            return i;
+        }
+    }
+    return -1;
+}
 
+int indexIfEpsilonPresent(vector<char> firstterminals) {
+    for (size_t i = 0; i < firstterminals.size(); i++)
+    {
+        if (firstterminals[i] == '@') {
+            return i;
+        }
+    }
+    return -1;
+}
 
 auto addTerminals(vector<char> terminals, string rhs) {
     int flag = 0;
@@ -48,27 +72,38 @@ void firstx(char X) {
 
 auto first(string alpha) {
     vector<char> firstterminals;
-    firstterminals = addTerminals(firstterminals, alpha);
-    for (size_t i = 0; i < alpha.length(); i++)
-    {
-        if (isupper(alpha[i])) {
-            for (size_t i = 0; i < nt.size(); i++)
-            {
-                if (nt.lhs == alpha[i]) {
-                    for (size_t i = 0; i < nt.first.size(); i++)
-                    {
-
-                    }
-                }
+    if (!isupper(alpha[0])) {
+        firstterminals.push_back(alpha[0]);
+    }
+    else {
+        size_t i;
+        for ( i = 0; i < alpha.size(); i++)
+        {
+            int productionindex = getIndexForLHS(alpha[i]);
+            if (nt[productionindex].first.empty()) {
+                firstx(alpha[i]);
             }
+            /*else {
+                firstterminals = nt[productionindex].first;
+            }
+            int index = indexIfEpsilonPresent(firstterminals);
+            if (index > -1) {
+                firstterminals.erase(firstterminals.begin() + index);
+            }
+            else {
+                break;
+            }*/
+        }
+        if (i == alpha.size()) {
+            firstterminals.push_back('@');
         }
     }
     return firstterminals;
 }
 
-auto constructPredictiveParsingTable(string parsingtable[100][100]) {
+void constructPredictiveParsingTable(string (&parsingtable)[100][100]) {
 
-    return parsingtable;
+    
 }
 
 
@@ -100,7 +135,7 @@ int main(int argc, char* argv[]){
         return 0;
     }
     string line;
-    int productioncount=0;
+    
     // A vector to create the ordered list of LHS
     vector<char> lhslist;
     // A vector to create the list of all terminals, '@' is included
@@ -120,9 +155,10 @@ int main(int argc, char* argv[]){
         // Get LHS from line and add to list
         char lhs = line[0];
         lhslist.push_back(lhs);
+        nt[productioncount].lhs = lhs;
         // Remove the "S->" or "A->" part of the line
         line.erase(0,3);
-        //cout << line << endl;
+        cout << line << endl;
         while(!line.empty()){
             // Find the first "|" in the string
             size_t pipepos=line.find("|");
@@ -131,19 +167,21 @@ int main(int argc, char* argv[]){
                 break;
             }
             string rhs;
-            nt[productioncount].lhs = lhs;
+            cout << "LHS: " << lhs;
             // RHS is from beginning till "|"
             rhs = line.substr(0,pipepos);
-            nt[productioncount].rhs = rhs;
-            productioncount++;
+            cout << " RHS: " << rhs << endl;
+            nt[productioncount].rhs.push_back(rhs);
             terminals = addTerminals(terminals, rhs);
             // Remove the first RHS part including the pipe "|" from the line
             line.erase(0,pipepos+1);
         } 
+        nt[productioncount].rhs.push_back(line);
+        productioncount++;
     } 
-    printProductions(productioncount);
+    printProductions();
     string parsingtable[100][100];
-    parsingtable = constructPredictiveParsingTable(parsingtable);
+    constructPredictiveParsingTable(parsingtable);
     string input;
     cout << "Enter any input string: ";
     cin >> input;

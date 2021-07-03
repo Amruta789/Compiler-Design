@@ -1,3 +1,8 @@
 # Production input is of the form S -> Aa | Bb | @ where '@' represents epsilon
 # Any single character which is not upper-case or '|' is a terminal
 # Any single character which is upper-case is a non-terminal
+S -> T E
+E -> + T E | @
+T -> F P
+P -> * F P | @
+F -> ( S ) | i
