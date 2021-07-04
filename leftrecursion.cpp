@@ -11,20 +11,20 @@ void printOutput(map<string, vector<string>> output){
     }
 }
 
-auto eliminateDirectLeftRecursion(string lhs, map<string, vector<string>> productions){
+map<string,vector<string>> eliminateDirectLeftRecursion(string lhs, map<string, vector<string>> productions){
     for (size_t i = 0; i < productions[lhs].size(); i++){
         string newterminal = lhs+"\'";
         int flag=0;
         int lhspos = productions[lhs][i].find(lhs);
         cout << "Input RHS " << productions[lhs][i] << endl;
         cout << "LHS " << lhs << " position in RHS: " << lhspos << endl;
-        printOutput(productions); 
+        printOutput(productions);
         if (lhspos==0){
             flag=1;
             string rhs=productions[lhs][i].substr(1)+newterminal;
             // cout << "RHS is " << rhs << endl;
             productions[newterminal].push_back(rhs);
-            cout << "Production is A' -> " << productions[newterminal][0] << endl; 
+            cout << "Production is A' -> " << productions[newterminal][0] << endl;
             for (size_t j = 0; j < productions[lhs].size(); j++){
                 if(productions[lhs][j].find(lhs)!=0){
                     productions[lhs][j].append(newterminal);
@@ -40,7 +40,7 @@ auto eliminateDirectLeftRecursion(string lhs, map<string, vector<string>> produc
     //printOutput(productions);
 
     return productions;
-    
+
 }
 
 void eliminateLeftRecursion(vector<string> lhslist, map<string, vector<string>> inputproductions){
@@ -60,7 +60,7 @@ void eliminateLeftRecursion(vector<string> lhslist, map<string, vector<string>> 
                     }
                 }
             }
-            output=eliminateDirectLeftRecursion(lhslist[i],output);   
+            output=eliminateDirectLeftRecursion(lhslist[i],output);
         }
     }
     cout << "The output productions are: " << endl;
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]){
                 cout << lhslist[i] << " -> " << productions[lhslist[i]][j] << endl;
             }
         }
-    } 
+    }
     eliminateLeftRecursion(lhslist, productions);
     filebuf.close();
     return 0;
