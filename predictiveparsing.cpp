@@ -22,7 +22,7 @@ void printProductions() {
         for (size_t j = 0; j < nt[i].rhs.size(); j++)
         {
             cout << nt[i].lhs << " -> " << nt[i].rhs[j] << endl;
-        } 
+        }
     }
 
 }
@@ -47,7 +47,7 @@ int indexIfEpsilonPresent(vector<char> firstterminals) {
     return -1;
 }
 
-auto addTerminals(vector<char> terminals, string rhs) {
+vector<char> addTerminals(vector<char> terminals, string rhs) {
     int flag = 0;
     for (size_t i = 0; i < rhs.length(); i++)
     {
@@ -65,35 +65,65 @@ auto addTerminals(vector<char> terminals, string rhs) {
     return terminals;
 }
 
+vector<char> first(string alpha);
+
 void firstx(char X) {
+  int productionindex = getIndexForLHS(X);
+  for (size_t i = 0; i < nt[productionindex].rhs.size(); i++) {
+    vector<char> firstterminals;
+    // Calculate first() for each RHS.
+    firstterminals = first(nt[productionindex].rhs[i]);
+    for (size_t j = 0; j < firstterminals.size(); j++) {
+      int flag=0;
+      // Check if any of the terminals in firstterminals list are already present in first(X), then don't add.
+      for (size_t k = 0; k < nt[productionindex].first.size(); k++) {
+        if(nt[productionindex].first[k]==firstterminals[j]){
+          flag=1;
+        }
+      }
+      // Add whatever is in firstterminals as long as it is not already in first(X)
+      if(flag==0){
+        nt[productionindex].first.push_back(firstterminals[j]);
+      }
+
+    }
+  }
 
 }
 
 
-auto first(string alpha) {
+vector<char> first(string alpha) {
     vector<char> firstterminals;
+    // If first character is a terminal, it can even be '@', it is added to the array, and then returned directly.
     if (!isupper(alpha[0])) {
         firstterminals.push_back(alpha[0]);
     }
     else {
+        // When first character is non-terminal
         size_t i;
         for ( i = 0; i < alpha.size(); i++)
         {
             int productionindex = getIndexForLHS(alpha[i]);
+            // Find first(X) where X is the first non-terminal in RHS
             if (nt[productionindex].first.empty()) {
                 firstx(alpha[i]);
             }
-            /*else {
-                firstterminals = nt[productionindex].first;
+            // If first(X) is known
+            int flag=0;
+              for (size_t i = 0; i < nt[productionindex].first.size();i++){
+                if(nt[productionindex].first[i]!='@'){
+                  firstterminals.push_back(nt[productionindex].first[i]);
+                }else{
+                  // If epsilon is present in first(X)
+                  flag=1;
+                }
+              }
+            // If epsilon is not present in first(X), break the loop, return firstterminals
+            if(flag==0){
+              break;
             }
-            int index = indexIfEpsilonPresent(firstterminals);
-            if (index > -1) {
-                firstterminals.erase(firstterminals.begin() + index);
-            }
-            else {
-                break;
-            }*/
         }
+        // If loop was broken when last character was reached, then that means epsilon shoould be added.
         if (i == alpha.size()) {
             firstterminals.push_back('@');
         }
@@ -103,7 +133,7 @@ auto first(string alpha) {
 
 void constructPredictiveParsingTable(string (&parsingtable)[100][100]) {
 
-    
+
 }
 
 
@@ -135,7 +165,7 @@ int main(int argc, char* argv[]){
         return 0;
     }
     string line;
-    
+
     // A vector to create the ordered list of LHS
     vector<char> lhslist;
     // A vector to create the list of all terminals, '@' is included
@@ -175,17 +205,17 @@ int main(int argc, char* argv[]){
             terminals = addTerminals(terminals, rhs);
             // Remove the first RHS part including the pipe "|" from the line
             line.erase(0,pipepos+1);
-        } 
+        }
         nt[productioncount].rhs.push_back(line);
         productioncount++;
-    } 
+    }
     printProductions();
     string parsingtable[100][100];
     constructPredictiveParsingTable(parsingtable);
     string input;
     cout << "Enter any input string: ";
     cin >> input;
-    
+
     filebuf.close();
     return 0;
 }
