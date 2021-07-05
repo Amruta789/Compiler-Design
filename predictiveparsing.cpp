@@ -158,28 +158,42 @@ vector<char> first(string alpha) {
 
 
 void follow(char X){
-  nt[0].follow.push_back('$');
+  // Index of the production X in non-terminals details
   int productionindex = getIndexForLHS(X);
-  // if(!nt[productionindex].follow.empty()){
-  //   return;
-  // }
+  // cout << "X is: " << X << endl;
+  if(!nt[productionindex].follow.empty()){
+    cout << "Yes"<< endl;
+    return;
+  }
+  if(productionindex == 0){
+    nt[0].follow.push_back('$');
+  }
   for (size_t i = 0; i < productioncount; i++) {
+    // Find X in RHS of all productions.
     for (size_t j = 0; j < nt[i].rhs.size(); j++) {
       size_t xpos=nt[i].rhs[j].find(X);
-
+      // If X is found
       if(xpos != std::string::npos){
         int kflag=0;
+        // If X is not last position
         if(xpos != nt[i].rhs[j].size()-1){
           size_t k;
           for ( k = xpos+1; k < nt[i].rhs[j].size(); k++) {
+            cout <<"X is"<< X << "k is: "<< k << endl;
+            //cout << "What is after "<< X <<"? " << nt[i].rhs[j][k] << endl;
             if(!isupper(nt[i].rhs[j][k])){
               nt[productionindex].follow.push_back(nt[i].rhs[j][k]);
               break;
             }else{
               int nonterminalindex = getIndexForLHS(nt[i].rhs[j][k]);
+              if(nt[nonterminalindex].first.empty()){
+                firstx(nt[nonterminalindex].lhs);
+              }
               vector<char> firstterminals = nt[nonterminalindex].first;
               int flagepsilon=0;
+              cout << "First of " << nt[i].rhs[j][k] << ": ";
               for (size_t l = 0; l < firstterminals.size(); l++) {
+                cout << firstterminals[l] << " ";
                 int flag=0;
                 if(firstterminals[l]=='@'){
                   flagepsilon=1;
@@ -190,19 +204,24 @@ void follow(char X){
                     flag=1;
                   }
                 }
-                if(flag==0){
+                if(flag==0 && firstterminals[l]!='@'){
                   nt[productionindex].follow.push_back(firstterminals[l]);
                 }
               }
+              cout << endl;
               if(flagepsilon==0){
                 break;
               }
             }
           }
+          cout <<"X is"<< X << " "<< "k is: "<< k << endl;
           if(k==nt[i].rhs[j].size()){
+            cout << "k is " << k << endl;
             kflag=1;
           }
-        }else if( xpos == nt[i].rhs[j].size()-1 || kflag==1 ){
+        }
+        if( xpos == nt[i].rhs[j].size()-1 || kflag==1 ){
+          cout <<"kflag is "<< kflag << endl;
           if(nt[i].follow.empty()){
             follow(nt[i].lhs);
           }
@@ -222,6 +241,11 @@ void follow(char X){
       }
     }
   }
+  cout << "The follow for "<< X << ": ";
+  for (size_t i = 0; i < nt[productionindex].follow.size(); i++) {
+    cout << nt[productionindex].follow[i] << " ";
+  }
+  cout << endl;
 }
 
 void constructPredictiveParsingTable(string (&parsingtable)[100][100], vector<char> lhslist, vector<char> terminals) {
@@ -255,10 +279,10 @@ void constructPredictiveParsingTable(string (&parsingtable)[100][100], vector<ch
               follow(nt[i].lhs);
             }
             vector<char> followterminals = nt[i].follow;
-            for (size_t d = 0; d < followterminals.size(); d++) {
-              cout<< "Follow list: " << followterminals[d] << " ";
-            }
-            cout << endl;
+            // for (size_t d = 0; d < followterminals.size(); d++) {
+            //   cout<< "Follow list: " << followterminals[d] << " ";
+            // }
+            // cout << endl;
             for (size_t l = 0; l < followterminals.size(); l++) {
               int terminalindex = getIndexForTerminal(followterminals[l], terminals);
               if(parsingtable[ntindex][terminalindex]!=" "){
@@ -293,7 +317,7 @@ int ParseString(string s, string (&parsingtable)[100][100], vector<char> lhslist
     s.append("$");
     stack.push_back('$');
     stack.push_back(lhslist[0]);
-    printf("Parsing string :- %s\n", s);
+    cout << "Parsing string: " << s << endl;
     printf("Stack top :- %c\n", stack.back());
 
     int index=0;
@@ -323,12 +347,12 @@ int ParseString(string s, string (&parsingtable)[100][100], vector<char> lhslist
                 }else{
                     stack.pop_back();
                     string prod = parsingtable[i][j];
-
-                    // for(int k=strlen(pro.rhs[prod_index])-1;k>=0;k--){
-                    //     if(pro.rhs[prod_index][k] != '#'){
-                    //         push(pro.rhs[prod_index][k]);
-                    //     }
-                    // }
+                    prod.erase(0,3);
+                    for(int k=prod.size()-1 ; k>=0; k--){
+                        if(prod[k] != '@'){
+                            stack.push_back(prod[k]);
+                        }
+                    }
 
                 }
             }
@@ -337,8 +361,9 @@ int ParseString(string s, string (&parsingtable)[100][100], vector<char> lhslist
             }
         }
         // Printing the stack to know the progress of the parser.
+        cout << "Stack contains: " << endl;
         for (size_t i = 0; i < stack.size(); i++) {
-          std::cout << stack[i] << '\n';
+          cout << stack[i] << '\n';
         }
 	}
     return 1;
@@ -394,7 +419,7 @@ int main(int argc, char* argv[]){
         nt[productioncount].lhs = lhs;
         // Remove the "S->" or "A->" part of the line
         line.erase(0,3);
-        cout << line << endl;
+        // cout << line << endl;
         while(!line.empty()){
             // Find the first "|" in the string
             size_t pipepos=line.find("|");
@@ -403,10 +428,10 @@ int main(int argc, char* argv[]){
                 break;
             }
             string rhs;
-            cout << "LHS: " << lhs;
+            // cout << "LHS: " << lhs;
             // RHS is from beginning till "|"
             rhs = line.substr(0,pipepos);
-            cout << " RHS: " << rhs << endl;
+            // cout << " RHS: " << rhs << endl;
             nt[productioncount].rhs.push_back(rhs);
             terminals = addTerminals(terminals, rhs);
             // Remove the first RHS part including the pipe "|" from the line
@@ -423,6 +448,11 @@ int main(int argc, char* argv[]){
     string input;
     cout << "Enter any input string: ";
     cin >> input;
+    if(ParseString(input, parsingtable, lhslist, terminals)){
+      cout << "String has been accepted" << endl;
+    }else{
+      cout << "String could not be accepted" << endl;
+    }
 
     filebuf.close();
     return 0;

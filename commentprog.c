@@ -9,7 +9,7 @@ int main(int argc, char** argv){
 	}
 	const char* extension;
 	extension = strrchr(argv[1],'.');
-	if(!extension || extension == argv[1]){ 
+	if(!extension || extension == argv[1]){
 		printf("File should be .c or .cc or .cpp\n");
 		return 0;
 	}
@@ -22,11 +22,13 @@ int main(int argc, char** argv){
 		printf("File does not exist\n");
 		return 0;
 	}
+	/* Tring a ling a Deteling
+	 Abing a nong */
 	char filename2[100];
 	strcpy(filename2, "uncommented-");
 	strcat(filename2,argv[1]);
 	FILE *fp2=fopen(filename2,"w");
-	char c;
+	char c, buffalo;
 	while((c=fgetc(fp1))!=EOF){
 		if(c=='/'){
 			c=fgetc(fp1);
@@ -47,7 +49,8 @@ int main(int argc, char** argv){
 			}
 		}else
 			fputc(c,fp2);
-	}	
+	}
+	buffalo = '8';
 	fclose(fp1);
 	fclose(fp2);
 	return 0;
