@@ -1,6 +1,4 @@
 # Production input is of the form S -> Aa | Bb and there are no epsilon-productions
-S->(L)|a
-L->L,S|S
-#S -> A
-#A -> A d | Ae | aB | ac
-#B -> bBc | f
+S -> A
+A -> A d | Ae | aB | ac
+B -> bBc | f

@@ -15,6 +15,7 @@ map<string,vector<string>> eliminateDirectLeftRecursion(string lhs, map<string, 
     for (size_t i = 0; i < productions[lhs].size(); i++){
         string newterminal = lhs+"\'";
         int flag=0;
+        // find lhs character in RHS
         int lhspos = productions[lhs][i].find(lhs);
         cout << "Input RHS " << productions[lhs][i] << endl;
         cout << "LHS " << lhs << " position in RHS: " << lhspos << endl;
@@ -24,23 +25,39 @@ map<string,vector<string>> eliminateDirectLeftRecursion(string lhs, map<string, 
             string rhs=productions[lhs][i].substr(1)+newterminal;
             // cout << "RHS is " << rhs << endl;
             productions[newterminal].push_back(rhs);
-            cout << "Production is A' -> " << productions[newterminal][0] << endl;
             for (size_t j = 0; j < productions[lhs].size(); j++){
                 if(productions[lhs][j].find(lhs)!=0){
+                  cout << "Production is "<< lhs << "->"<< productions[lhs][j] << endl;
+                  cout << "Position of newterminal " << productions[lhs][j].find(newterminal) << endl;
+                  if(productions[lhs][j].find(newterminal)== std::string::npos){
                     productions[lhs][j].append(newterminal);
+                  }
                 }
             }
-            productions[lhs].erase(productions[lhs].begin()+i);
         }
         if(flag==1){
-            outputlhslist.push_back(newterminal);
-            productions[newterminal].push_back("#");
+            int flagnewterminal=0;
+            for (size_t i = 0; i < outputlhslist.size(); i++) {
+              if(newterminal.compare(outputlhslist[i])==0){
+                flagnewterminal=1;
+              }
+            }
+            if(flagnewterminal==0){
+              outputlhslist.push_back(newterminal);
+              productions[newterminal].push_back("#");
+            }
         }
     }
     //printOutput(productions);
-
+    for (size_t i = 0; i < productions[lhs].size(); i++){
+        // find lhs character in RHS
+        int lhspos = productions[lhs][i].find(lhs);
+        if (lhspos==0){
+          productions[lhs].erase(productions[lhs].begin()+i);
+          i--;
+        }
+    }
     return productions;
-
 }
 
 void eliminateLeftRecursion(vector<string> lhslist, map<string, vector<string>> inputproductions){
@@ -51,9 +68,12 @@ void eliminateLeftRecursion(vector<string> lhslist, map<string, vector<string>> 
         for(size_t j=0; j<i; j++){
             for (size_t k = 0; k < inputproductions[lhslist[i]].size() ; k++)
             {
+              // If any of the first characters in RHS of production is equal to LHS
                 if(lhslist[j][0]==inputproductions[lhslist[i]][k][0]){
+                    // gamma is the string after the first character in that RHS
                     string gamma = inputproductions[lhslist[i]][k].substr(1);
                     for(size_t l=0; l < inputproductions[lhslist[j]].size(); l++){
+                        // Get productions of Aj
                         string delta=inputproductions[lhslist[j]][l];
                         string rhs = delta + gamma;
                         output[lhslist[i]].push_back(rhs);
