@@ -15,13 +15,7 @@ string delimiters[] = { " ", "+", "-", "*", "/", ",", ";", ">", "<", "=", "(", "
 
 
 
-bool checkIfVariableDeclared(string line, int linenumber){    
-    for (size_t i = 0; i < 19; i++){
-        if(line.find(declarationslist[i])!=-1)
-            return 1;
-    }
-    return 0;
-}
+
 
 
 
@@ -51,12 +45,10 @@ int main(int argc, char* argv[]){
     string line;
     cout << "Lines which contain declarations: " << endl;
     while(getline(filebuf,line)){
-        linecount++;      
-        if(checkIfVariableDeclared(line,linecount)){
-            cout << linecount << " " << line << endl;
-        }
+        linecount++;
+        
     } /* HA */
-     
+
     filebuf.close();
     return 0;
 }

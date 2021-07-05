@@ -160,20 +160,68 @@ vector<char> first(string alpha) {
 void follow(char X){
   nt[0].follow.push_back('$');
   int productionindex = getIndexForLHS(X);
-  if(!nt[productionindex].follow.empty()){
-    return;
-  }
+  // if(!nt[productionindex].follow.empty()){
+  //   return;
+  // }
   for (size_t i = 0; i < productioncount; i++) {
     for (size_t j = 0; j < nt[i].rhs.size(); j++) {
-      for (size_t k = 0; k < nt[i].rhs[j].size(); k++) {
-        if(nt[i].rhs[j][k]==X){
-          break;
+      size_t xpos=nt[i].rhs[j].find(X);
+
+      if(xpos != std::string::npos){
+        int kflag=0;
+        if(xpos != nt[i].rhs[j].size()-1){
+          size_t k;
+          for ( k = xpos+1; k < nt[i].rhs[j].size(); k++) {
+            if(!isupper(nt[i].rhs[j][k])){
+              nt[productionindex].follow.push_back(nt[i].rhs[j][k]);
+              break;
+            }else{
+              int nonterminalindex = getIndexForLHS(nt[i].rhs[j][k]);
+              vector<char> firstterminals = nt[nonterminalindex].first;
+              int flagepsilon=0;
+              for (size_t l = 0; l < firstterminals.size(); l++) {
+                int flag=0;
+                if(firstterminals[l]=='@'){
+                  flagepsilon=1;
+                  continue;
+                }
+                for (size_t m = 0; m < nt[productionindex].follow.size(); m++) {
+                  if(firstterminals[l]==nt[productionindex].follow[m]){
+                    flag=1;
+                  }
+                }
+                if(flag==0){
+                  nt[productionindex].follow.push_back(firstterminals[l]);
+                }
+              }
+              if(flagepsilon==0){
+                break;
+              }
+            }
+          }
+          if(k==nt[i].rhs[j].size()){
+            kflag=1;
+          }
+        }else if( xpos == nt[i].rhs[j].size()-1 || kflag==1 ){
+          if(nt[i].follow.empty()){
+            follow(nt[i].lhs);
+          }
+          vector<char> followterminals = nt[i].follow;
+          for (size_t n = 0; n < followterminals.size(); n++) {
+            int flag =0;
+            for (size_t m = 0; m < nt[productionindex].follow.size(); m++) {
+              if(followterminals[n]==nt[productionindex].follow[m]){
+                flag=1;
+              }
+            }
+            if(flag==0){
+              nt[productionindex].follow.push_back(followterminals[n]);
+            }
+          }
         }
       }
-
     }
   }
-
 }
 
 void constructPredictiveParsingTable(string (&parsingtable)[100][100], vector<char> lhslist, vector<char> terminals) {
@@ -203,7 +251,14 @@ void constructPredictiveParsingTable(string (&parsingtable)[100][100], vector<ch
             }
           }
           if(flagepsilon==1){
+            if(nt[i].follow.empty()){
+              follow(nt[i].lhs);
+            }
             vector<char> followterminals = nt[i].follow;
+            for (size_t d = 0; d < followterminals.size(); d++) {
+              cout<< "Follow list: " << followterminals[d] << " ";
+            }
+            cout << endl;
             for (size_t l = 0; l < followterminals.size(); l++) {
               int terminalindex = getIndexForTerminal(followterminals[l], terminals);
               if(parsingtable[ntindex][terminalindex]!=" "){
@@ -358,6 +413,7 @@ int main(int argc, char* argv[]){
             line.erase(0,pipepos+1);
         }
         nt[productioncount].rhs.push_back(line);
+        terminals = addTerminals(terminals, line);
         productioncount++;
     }
     terminals.push_back('$');
