@@ -7,7 +7,7 @@
 #include<map>
 using namespace std;
 
-string keywordslist[32] = {"auto", "bool", "char", "define", "double", "enum",
+string keywordslist[33] = {"auto", "bool", "char", "const", "define", "double", "enum",
                     "extern", "float", "int", "FILE", "NULL", "EOF",
                     "long", "register", "short", "static", "struct",
                     "typedef","union", "unsigned","void", "if", "else",
@@ -19,7 +19,7 @@ char delimiters[24] = { ' ', '+', '-', '*', '/', ',', ';', '>', '<', '=', '(', '
 
 /* Checks if keyword*/
 bool checkIfKeyword(string str){
-  for (size_t i = 0; i < 32; i++) {
+  for (size_t i = 0; i < 33; i++) {
     if(str.compare(keywordslist[i])==0){
       return 1;
     }
@@ -115,6 +115,7 @@ map<string, vector<int>> findNames(string str, int linenumber, map<string, vecto
    return nameslist;
 }
 
+//string removeCommentsFromLine
 
 /* DAsh bufallo
  AShskdhkc
@@ -142,29 +143,40 @@ int main(int argc, char* argv[]){
     string line;
     cout << "Lines which contain names: " << endl;
     map<string, vector<int>> nameslist;
-    bool comment=false;
+    bool comment=0;
     while(getline(filebuf,line)){
-        string str1;
+        string line2;
         linecount++;
         if(line.empty() || line[0] == '#' || line[0] == '\r' || line[0] == '\n'){
           continue;
         }
+        // Removing strings which are comments and within double quotes.
         for(size_t j=0; j < line.size();j++){
           if(!comment && line[j]=='"'){
-            j+=1;
+            j++;
             while(line[j]!='"'){
               j++;
             }
             j++;
           }
-          if (!comment && j + 1 < line.size() && line[j] == '/' && line[j + 1] == '/') break;
-          else if (!comment && j + 1 < line.size() && line[j] == '/' && line[j + 1] == '*') comment = true, j++;
-          else if (comment && j + 1 < line.size() && line[j] == '*' && line[j + 1] == '/') comment = false, j++;
-          else if (!comment) str1.push_back(line[j]);
+          if (!comment && j+1 < line.size() && line[j] == '/' && line[j+1] == '/') {
+            break;
+          }
+          else if (!comment && j+1 < line.size() && line[j] == '/' && line[j+1] == '*'){
+            comment = 1;
+            j++;
+          }
+          else if (comment && j+1 < line.size() && line[j] == '*' && line[j+1] == '/') {
+            comment = 0;
+            j++;
+          }
+          else if (!comment) {
+            line2.push_back(line[j]);
+          }
         }
-        nameslist = findNames (str1,linecount, nameslist);
+        nameslist = findNames (line2,linecount, nameslist);
     } /* HA */
-    for (const auto &variable : nameslist) {
+    for (const auto &variable: nameslist) {
       cout << variable.first << ": ";
       for (size_t i = 0; i < variable.second.size(); i++) {
         cout << variable.second[i] << " ";
