@@ -127,7 +127,7 @@ void canonical(int l)
 		moreprod();
 		for(j=0;j<ns;j++)
 		{
-			//if ( memcmp(&I[ns],&I[j],sizeof(struct states))==1 )
+
 			if( compstruct(I[ns],I[j])==1 )
 			{
 				I[ns].lhs[0]='\0';
@@ -150,7 +150,7 @@ void canonical(int l)
 		}
 
 		dfa[l][j]=temp2[1];
-		printf("\n\nI%d :",ns);
+		printf("\n\nI%d :",ns);	
 		for(j=0;j<I[ns].n;j++)
 			printf("\n\t%c -> %s",I[ns].lhs[j],I[ns].rhs[j]);
 
@@ -212,7 +212,7 @@ void main()
 		dfa[i][0]='\0';
 	}
 
-	f=fopen("grammar.txt","r");
+	f=fopen("grammar2.txt","r");
 	while(!feof(f))
 	{
 		fscanf(f,"%c",&gl[n]);
@@ -289,12 +289,12 @@ void main()
 				else if (strchr(variables,dfa[i][j])){
 					sprintf(slr[i][len_ter+strchr(variables,dfa[i][j])-variables],"%d",j);
 				}
-			}	
+			}
 		}
 		//printf("Here..i..%d\n",i);
 		for (j=0;j<I[i].n;j++){
 			int temp_ind = strlen(I[i].rhs[j])-1; // to make the 1st state that end with "S." accept. 
-			
+
 			if (I[i].rhs[j][temp_ind] == '.'){
 				//printf("Here...j.%d\n",j);
 				if (I[i].rhs[j][temp_ind-1] == 'S' && i==1)
@@ -302,14 +302,14 @@ void main()
 				else{
 					//printf("--->%d %d %c<---\n",i,j,I[i].lhs[j]);
 					//printf("Here..j..%c\n",I[i].lhs[j]);
-					
+
 					follow(I[i].lhs[j]);
 
 					int ha,prod_num,tempo_store;
-					
+
 					//for (int ip=0;ip<m;ip++)
-  					//	printf("@@%c @",foll[ip]);
-  					
+
+
 					for (ha=0;gl[ha]!='\0';ha++){
 						if (strncmp(gr[ha],I[i].rhs[j],temp_ind)==0)
 							prod_num = ha + 1;
