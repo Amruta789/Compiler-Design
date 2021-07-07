@@ -28,6 +28,7 @@ int main(int argc, char** argv){
 	strcpy(filename2, "uncommented-");
 	strcat(filename2,argv[1]);
 	FILE *fp2=fopen(filename2,"w");
+	// buffalo just added for testing.
 	char c, buffalo;
 	while((c=fgetc(fp1))!=EOF){
 		if(c=='/'){
