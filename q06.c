@@ -17,11 +17,34 @@ void main()
 			opt[i][j][1]=g;
 		}
 	}
-	printf("Enter the no.of terminals :");
+
+	printf("Enter no.of terminals\n");
 	scanf("%d",&n);
 
 	printf("\nEnter the terminals :");
 	scanf("%s",ter);
+
+/*	FILE *fp,*f;
+	int count=0,i2=0;
+	char c,c2;
+	fp = fopen("opgram.txt","r");
+	for(c=getc(fp); c!=EOF; c=getc(fp)){
+		if(c=='\n')
+			count++;
+	}
+	fclose(fp);
+	f = fopen("opgram.txt","r");
+	c2 = (char)fgetc(fp);
+	while(i2<count-1){
+		ter[i2]=c2;
+		c2 = (char)fgetc(fp);
+		i2++;
+	}
+
+	fclose(f);
+*/
+
+
 	printf("\nEnter the table values :\n");
 	
 	for(i=0;i<n;i++)
