@@ -69,7 +69,7 @@ void main()
 				printf("\t%c",opt[i][j][0]);
 		}
 	}
-
+	
 	stack[top]='$';
 	printf("\nEnter the input string:");
 	scanf("%s",ip);
@@ -101,10 +101,10 @@ void main()
 		{
 			if(opt[col][row][0]=='>')
 			{
-				while(stack[top]!='<')
-				{
-					--top;
-				}
+				//while(stack[top]!='<')
+				//{
+			//		--top;
+			//	}
 				top=top-1;
 				printf("Reduce");
 			}
